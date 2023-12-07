@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   mariadb:
-    image: bitnami/mariadb
+    image: dipache/testlinkgrupo9project
     container_name: mariadb_testlink
     restart: always
     env_file:
@@ -10,10 +10,10 @@ services:
     networks:
       - testlink-network
     volumes:
-      - mariadb_testlink_data:/bitnami
+      - mariadb_testlink_data:/dipache
 
   testlink:
-    image: bitnami/testlink
+    image: dipache/testlinkgrupo9project
     container_name: testlink
     restart: always
     ports:
