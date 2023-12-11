@@ -1,11 +1,15 @@
-
-
 # Usar una imagen base con PHP y Apache
 FROM php:7.4-apache
 
 # Instalar extensiones de PHP necesarias
-RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN docker-php-ext-install mysqli pdo pdo_mysql gd ldap
 
+# Ajustar la configuración de PHP
+RUN echo "max_execution_time = 120" >> /usr/local/etc/php/php.ini
+RUN echo "memory_limit = 256M" >> /usr/local/etc/php/php.ini
+
+# Descargar la última versión de TestLink
+ADD https://github.com/TestLinkOpenSourceTRMS/testlink-code/archive/refs/heads/master.zip /var/www/html/
 
 # Instalar unzip y descomprimir TestLink
 RUN apt-get update && \
@@ -17,8 +21,11 @@ RUN apt-get update && \
 # Asignar permisos adecuados
 RUN chown -R www-data:www-data /var/www/html/
 
-# Configurar el volumen para la persistencia de datos
-VOLUME ["/var/www/html"]
+# Crear directorios faltantes
+RUN mkdir -p /var/testlink/logs/ /var/testlink/upload_area/
+
+# Asignar permisos a los directorios faltantes
+RUN chown -R www-data:www-data /var/testlink/logs/ /var/testlink/upload_area/
 
 # Exponer el puerto 80
 EXPOSE 80
