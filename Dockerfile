@@ -6,8 +6,6 @@ FROM php:7.4-apache
 # Instalar extensiones de PHP necesarias
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 
-# Descargar la última versión de TestLink
-ADD https://github.com/TestLinkOpenSourceTRMS/testlink-code/archive/refs/heads/master.zip /var/www/html/
 
 # Instalar unzip y descomprimir TestLink
 RUN apt-get update && \
