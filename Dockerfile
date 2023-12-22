@@ -13,6 +13,7 @@ RUN apt-get update && \
         libpng-dev \
         libpq-dev \
         libxml2-dev \
+    && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
     && docker-php-ext-install mysqli pdo pdo_mysql gd ldap
 
 # Ajustar la configuración de PHP
