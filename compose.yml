@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   mariadb:
-    image: mariadb:latest
+    image: dipache/testlinkgrupo9project
     container_name: mariadb_testlink
     restart: always
     env_file:
@@ -10,10 +10,10 @@ services:
     networks:
       - testlink-network
     volumes:
-      - mariadb_testlink_data:/var/lib/mysql
+      - mariadb_testlink_data:/dipache
 
   testlink:
-    build: .
+    image: dipache/testlinkgrupo9project
     container_name: testlink
     restart: always
     ports:
@@ -23,12 +23,12 @@ services:
     networks:
       - testlink-network
     volumes:
-      - testlink_data:/var/www/html/testlink
+      - testlink_data:/bitnami
     depends_on:
       - mariadb
     environment:
-      - TESTLINK_LANGUAGE=${TESTLINK_LANGUAGE}
-      - SMTP_ENABLE=${SMTP_ENABLE}
+      - TESTLINK_LANGUAGE=pt_BR
+      - SMTP_ENABLE=${SMTP_ENABLE:-false}
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_PORT=${SMTP_PORT}
       - SMTP_USER=${SMTP_USER}
