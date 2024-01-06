@@ -6,10 +6,7 @@ services:
     container_name: mariadb_testlink
     restart: always
     env_file:
-      - MARIADB_DATABASE=${DATABASE_NAME}
-      - MARIADB_USER=${DATABASE_USER}
-      - MARIADB_PASSWORD=${DATABASE_PASS}
-      - MARIADB_ROOT_PASSWORD=${DATABASE_ROOT_PASS}
+      - params.txt
     networks:
       - testlink-network
     volumes:
@@ -30,12 +27,6 @@ services:
     depends_on:
       - mariadb
     environment:
-      - TESTLINK_DATABASE_NAME=${DATABASE_NAME}
-      - TESTLINK_DATABASE_USER=${DATABASE_USER}
-      - TESTLINK_DATABASE_PASSWORD=${DATABASE_PASS}
-      - TESTLINK_USERNAME=${TESTLINK_USERNAME}
-      - TESTLINK_PASSWORD=${TESTLINK_PASSWORD}
-      - TESTLINK_EMAIL=${TESTLINK_EMAIL}
       - TESTLINK_LANGUAGE=pt_BR
       - SMTP_ENABLE=${SMTP_ENABLE:-false}
       - SMTP_HOST=${SMTP_HOST}
