@@ -1,5 +1,5 @@
-# Utilizar una imagen base con PHP y Apache
-FROM php:7.4-apache
+# Etapa 1: Construir la imagen con PHP y Apache para TestLink
+FROM php:7.4-apache AS testlink-builder
 
 # Configuración de PHP para ignorar advertencias de deprecated
 RUN echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_NOTICE" >> /usr/local/etc/php/php.ini
@@ -13,8 +13,7 @@ RUN apt-get update && \
         libpng-dev \
         libpq-dev \
         libxml2-dev \
-    && docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ \
-    && docker-php-ext-install mysqli pdo pdo_mysql gd ldap
+        unzip
 
 # Ajustar la configuración de PHP
 RUN echo "max_execution_time = 120" >> /usr/local/etc/php/php.ini \
@@ -27,9 +26,7 @@ RUN echo "max_execution_time = 120" >> /usr/local/etc/php/php.ini \
 ADD https://github.com/TestLinkOpenSourceTRMS/testlink-code/archive/refs/heads/master.zip /var/www/html/testlink.zip
 
 # Instalar unzip y descomprimir TestLink
-RUN apt-get update && \
-    apt-get install -y unzip && \
-    unzip /var/www/html/testlink.zip -d /var/www/html/ && \
+RUN unzip /var/www/html/testlink.zip -d /var/www/html/ && \
     mv /var/www/html/testlink-code-master/* /var/www/html/ && \
     rm /var/www/html/testlink.zip
 
@@ -37,6 +34,27 @@ RUN apt-get update && \
 RUN chown -R www-data:www-data /var/www/html/ && \
     mkdir -p /var/testlink/logs/ /var/testlink/upload_area/ && \
     chown -R www-data:www-data /var/testlink/logs/ /var/testlink/upload_area/
+
+# Etapa 2: Construir la imagen de MariaDB
+FROM mariadb:latest AS mariadb-builder
+
+# Configuraciones específicas de MariaDB, si es necesario
+# ENV MYSQL_ROOT_PASSWORD=root_password
+# ENV MYSQL_DATABASE=bitnami_testlink
+# ENV MYSQL_USER=testlink_user
+# ENV MYSQL_PASSWORD=testlink_password
+
+# Puedes añadir configuraciones específicas de MariaDB si es necesario
+
+# Etapa 3: Imagen final
+FROM php:7.4-apache
+
+# Copiar solo lo necesario desde la etapa de TestLink
+COPY --from=testlink-builder /var/www/html/ /var/www/html/
+COPY --from=testlink-builder /var/testlink/ /var/testlink/
+
+# Copiar solo lo necesario desde la etapa de MariaDB
+COPY --from=mariadb-builder /var/lib/mysql /var/lib/mysql
 
 # Exponer el puerto 80
 EXPOSE 80
