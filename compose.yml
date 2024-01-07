@@ -1,22 +1,19 @@
 version: '3.7'
 
 services:
-  database:
-    image: mysql:5.7
+  mariadb:
+    image: bitnami/mariadb
+    container_name: mariadb_testlink
     restart: always
-    networks:
-      - docker_network
     environment:
-      MYSQL_DATABASE: testlink_db
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_USER: testlink
-      MYSQL_PASSWORD: testlink
+      - MARIADB_DATABASE=${DATABASE_NAME}
+      - MARIADB_USER=${DATABASE_USER}
+      - MARIADB_PASSWORD=${DATABASE_PASS}
+      - MARIADB_ROOT_PASSWORD=${DATABASE_ROOT_PASS}
+    networks:
+      - testlink-network
     volumes:
-      - mysql_data:/var/lib/mysql
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
+      - mariadb_testlink_data:/bitnami
 
   testlink:
     image: dipache/testlinkgrupo9project
@@ -46,6 +43,22 @@ services:
       - SMTP_USER=${SMTP_USER}
       - SMTP_PASSWORD=${SMTP_PASSWORD}
       - SMTP_CONNECTION_MODE=${SMTP_CONNECTION_MODE}
+database:
+  image: mysql:5.7
+  restart: always
+  networks:
+      - docker_network
+  environment:
+    MYSQL_DATABASE: testlink_db
+    MYSQL_ROOT_PASSWORD: root
+    MYSQL_USER: testlink
+    MYSQL_PASSWORD: testlink
+  volumes:
+    - mysql_data:/var/lib/mysql
+  healthcheck:
+    test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+    timeout: 20s
+    retries: 10
 
 volumes:
   mariadb_testlink_data:
