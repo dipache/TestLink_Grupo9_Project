@@ -13,7 +13,9 @@ RUN apt-get update && \
         libpng-dev \
         libpq-dev \
         libxml2-dev \
-        unzip
+        unzip \
+        && docker-php-ext-configure mysqli --with-mysqli=mysqlnd \
+        && docker-php-ext-install mysqli pdo_mysql pdo_pgsql
 
 # Ajustar la configuración de PHP
 RUN echo "max_execution_time = 120" >> /usr/local/etc/php/php.ini \
@@ -35,16 +37,7 @@ RUN chown -R www-data:www-data /var/www/html/ && \
     mkdir -p /var/testlink/logs/ /var/testlink/upload_area/ && \
     chown -R www-data:www-data /var/testlink/logs/ /var/testlink/upload_area/
 
-# Etapa 2: Construir la imagen de MariaDB
-FROM mariadb:latest AS mariadb-builder
 
-# Configuraciones específicas de MariaDB, si es necesario
-# ENV MYSQL_ROOT_PASSWORD=root_password
-# ENV MYSQL_DATABASE=bitnami_testlink
-# ENV MYSQL_USER=testlink_user
-# ENV MYSQL_PASSWORD=testlink_password
-
-# Puedes añadir configuraciones específicas de MariaDB si es necesario
 
 # Etapa 3: Imagen final
 FROM php:7.4-apache
