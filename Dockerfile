@@ -7,13 +7,14 @@ RUN echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_NOTICE" >> /usr/local/etc
 # Actualizar la lista de paquetes e instalar extensiones de PHP necesarias y dependencias
 RUN apt-get update && \
     apt-get install -y \
-        libfreetype6-dev \
-        libjpeg62-turbo-dev \
         libldap2-dev \
-        libpng-dev \
         libpq-dev \
         libxml2-dev \
         unzip \
+        libfreetype6 \
+        libfreetype6-dev \
+        libjpeg-dev \
+        libpng-dev \
         && docker-php-ext-configure mysqli --with-mysqli=mysqlnd \
         && docker-php-ext-install mysqli pdo_mysql pdo_pgsql
 
