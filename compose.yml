@@ -1,16 +1,22 @@
 version: '3.7'
 
 services:
-  mariadb:
-    image: dipache/testlinkgrupo9project
-    container_name: mariadb_testlink
+  database:
+    image: mysql:5.7
     restart: always
-    env_file:
-      - params.txt
     networks:
-      - testlink-network
+      - docker_network
+    environment:
+      MYSQL_DATABASE: testlink_db
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: testlink
+      MYSQL_PASSWORD: testlink
     volumes:
-      - mariadb_testlink_data:/dipache
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
 
   testlink:
     image: dipache/testlinkgrupo9project
