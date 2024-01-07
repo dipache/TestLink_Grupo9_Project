@@ -6,10 +6,10 @@ services:
     container_name: mariadb_testlink
     restart: always
     environment:
-      - MARIADB_DATABASE: testlink
-      - MARIADB_USER: testlink
-      - MARIADB_PASSWORD: testlink
-      - MARIADB_ROOT_PASSWORD: root
+      - MARIADB_DATABASE=${DATABASE_NAME}
+      - MARIADB_USER=${DATABASE_USER}
+      - MARIADB_PASSWORD=${DATABASE_PASS}
+      - MARIADB_ROOT_PASSWORD=${DATABASE_ROOT_PASS}
     networks:
       - testlink-network
     volumes:
