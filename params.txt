@@ -1,6 +1,6 @@
-DATABASE_NAME=bitnami_testlink
-DATABASE_USER=bn_testlink
-DATABASE_PASS=your_password
+DATABASE_NAME=testlink
+DATABASE_USER=testlink
+DATABASE_PASS=testlink
 DATABASE_ROOT_PASS=root
 PORT_HTTP=80
 TESTLINK_USERNAME=admin
