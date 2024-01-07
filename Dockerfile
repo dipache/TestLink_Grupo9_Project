@@ -38,16 +38,5 @@ RUN chown -R www-data:www-data /var/www/html/ && \
     chown -R www-data:www-data /var/testlink/logs/ /var/testlink/upload_area/
 
 
-
-# Etapa 3: Imagen final
-FROM php:7.4-apache
-
-# Copiar solo lo necesario desde la etapa de TestLink
-COPY --from=testlink-builder /var/www/html/ /var/www/html/
-COPY --from=testlink-builder /var/testlink/ /var/testlink/
-
-# Copiar solo lo necesario desde la etapa de MariaDB
-COPY --from=mariadb-builder /var/lib/mysql /var/lib/mysql
-
 # Exponer el puerto 80
 EXPOSE 80
