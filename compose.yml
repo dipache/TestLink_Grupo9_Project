@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   mariadb:
-    image: bitnami/mariadb
+    image: 'bitnami/mariadb:latest'
     container_name: mariadb_testlink
     restart: always
     environment:
@@ -16,7 +16,7 @@ services:
       - mariadb_testlink_data:/bitnami
 
   testlink:
-    image: bitnami/testlink-archived
+    image: 'bitnami/testlink-archived:latest'
     container_name: testlink
     restart: always
     ports:
