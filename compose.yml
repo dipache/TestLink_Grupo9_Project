@@ -16,7 +16,7 @@ services:
       - mariadb_testlink_data:/bitnami
 
   testlink:
-    image: bitnami-archived/testlink
+    image: bitnami/testlink-archived
     container_name: testlink
     restart: always
     ports:
