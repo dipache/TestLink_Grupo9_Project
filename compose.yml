@@ -1,32 +1,54 @@
----
-version: '2'
+version: '3.7'
 
 services:
   mariadb:
-    image: 'bitnami/mariadb:latest'
+    image: bitnami/mariadb
+    container_name: mariadb_testlink
+    restart: always
     environment:
-      - ALLOW_EMPTY_PASSWORD=yes
+      - MARIADB_DATABASE=${DATABASE_NAME}
+      - MARIADB_USER=${DATABASE_USER}
+      - MARIADB_PASSWORD=${DATABASE_PASS}
+      - MARIADB_ROOT_PASSWORD=${DATABASE_ROOT_PASS}
+    networks:
+      - testlink-network
     volumes:
-      - '/bitnami/mariadb_data:/bitnami'
+      - mariadb_testlink_data:/bitnami
+
   testlink:
-    image: 'bitnami/testlink-archived:latest'
-    labels:
-      kompose.service.type: nodeport
+    image: bitnami-archived/testlink
+    container_name: testlink
+    restart: always
     ports:
-      - '180:80'
-      - '1443:443'
+      - ${PORT_HTTP:-80}:80
+    networks:
+      - testlink-network
     volumes:
-      - '/bitnami/testlink_data:/bitnami'
-      - '/bitnami/php:/bitnami/php'
+      - testlink_data:/bitnami
     depends_on:
       - mariadb
     environment:
-      - SMTP_ENABLE=true
-      - SMTP_HOST=smtp
-      - SMTP_PORT=25
+      - TESTLINK_DATABASE_NAME=${DATABASE_NAME}
+      - TESTLINK_DATABASE_USER=${DATABASE_USER}
+      - TESTLINK_DATABASE_PASSWORD=${DATABASE_PASS}
+      - TESTLINK_USERNAME=${TESTLINK_USERNAME}
+      - TESTLINK_PASSWORD=${TESTLINK_PASSWORD}
+      - TESTLINK_EMAIL=${TESTLINK_EMAIL}
+      - TESTLINK_LANGUAGE=pt_BR
+      - SMTP_ENABLE=${SMTP_ENABLE:-false}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_CONNECTION_MODE=${SMTP_CONNECTION_MODE}
 
 volumes:
-  mariadb_data:
-    driver: local
+  mariadb_testlink_data:
+    name: mariadb_testlink_data
   testlink_data:
-    driver: local
+    name: testlink_data
+
+networks:
+  testlink-network:
+    name: testlink-network
+    driver: bridge
