@@ -1,0 +1,153 @@
+kind: Template
+apiVersion: v1
+metadata:
+  name: testlink-template
+  annotations:
+    description: "Plantilla de despliegue para TestLink"
+    tags: "testlink,mariadb"
+    openshift.io/documentation-url: "https://github.com/dipache/TestLink_Grupo9_Project.git"
+    openshift.io/support-url: "https://github.com/dipache/TestLink_Grupo9_Project.git"
+
+parameters:
+  - name: APP_NAME
+    description: "Nombre de la aplicación (Prefijo de todos los objetos)."
+    required: true
+
+  - name: DATABASE_NAME
+    description: "Nombre de la base de datos."
+    value: testlink
+
+  - name: DATABASE_USER
+    description: "Nombre de usuario para conexión a la base de datos."
+    value: testlink
+
+  - name: DATABASE_PASS
+    description: "Contraseña de usuario para conexión a la base de datos."
+    required: true
+
+  - name: PORT_HTTP
+    description: "Puerto HTTP para TestLink."
+    value: "80"
+
+  - name: TESTLINK_USERNAME
+    description: "Nombre de usuario de TestLink."
+    value: admin
+
+  - name: TESTLINK_PASSWORD
+    description: "Contraseña de usuario de TestLink."
+    value: admin
+
+  - name: TESTLINK_EMAIL
+    description: "Correo electrónico de TestLink."
+    value: dipache181@gmail.com
+
+  - name: SMTP_ENABLE
+    description: "Habilitar SMTP."
+    value: true
+
+  - name: SMTP_HOST
+    description: "Host SMTP."
+    value: smtp.office365.com
+
+  - name: SMTP_PORT
+    description: "Puerto SMTP."
+    value: "587"
+
+  - name: SMTP_USER
+    description: "Usuario SMTP."
+    value: distribuidosequipo9@outlook.com
+
+  - name: SMTP_PASSWORD
+    description: "Contraseña SMTP."
+    value: distequipo9
+
+  - name: SMTP_CONNECTION_MODE
+    description: "Modo de conexión SMTP."
+    value: tls
+
+objects:
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: "${APP_NAME}-mariadb-data"
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Gi
+
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: "${APP_NAME}-mariadb"
+    spec:
+      ports:
+        - name: mariadb
+          port: 3306
+          protocol: TCP
+      selector:
+        app: "${APP_NAME}-mariadb"
+
+  - kind: DeploymentConfig
+    apiVersion: apps.openshift.io/v1
+    metadata:
+      name: "${APP_NAME}-mariadb"
+    spec:
+      replicas: 1
+      selector:
+        app: "${APP_NAME}-mariadb"
+      template:
+        metadata:
+          labels:
+            app: "${APP_NAME}-mariadb"
+        spec:
+          containers:
+            - name: mariadb
+              image: 'bitnami/mariadb:latest'
+              env:
+                - name: MARIADB_ROOT_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: "${APP_NAME}-mariadb-keys"
+                      key: root_password
+                - name: MARIADB_DATABASE
+                  value: "${DATABASE_NAME}"
+                - name: MARIADB_USER
+                  value: "${DATABASE_USER}"
+                - name: MARIADB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: "${APP_NAME}-mariadb-keys"
+                      key: db_password
+              ports:
+                - containerPort: 3306
+                  protocol: TCP
+              volumeMounts:
+                - name: mariadb-data
+                  mountPath: /bitnami/mariadb
+          volumes:
+            - name: mariadb-data
+              persistentVolumeClaim:
+                claimName: "${APP_NAME}-mariadb-data"
+
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      name: "${APP_NAME}-mariadb-keys"
+    type: Opaque
+    stringData:
+      root_password: 'root'
+      db_password: "${DATABASE_PASS}"
+
+  - kind: Route
+    apiVersion: route.openshift.io/v1
+    metadata:
+      name: "${APP_NAME}-testlink"
+    spec:
+      host: "${APP_NAME}-${NAMESPACE}.${ROUTER_HOSTNAME}"
+      to:
+        kind: Service
+        name: "${APP_NAME}-mariadb"
+      port:
+        targetPort: mariadb
