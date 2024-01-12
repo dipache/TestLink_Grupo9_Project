@@ -65,6 +65,17 @@ parameters:
     description: "Modo de conexión SMTP."
     value: tls
 
+  - name: DOMAIN_NAME
+    description: "Nombre de dominio para la publicación de la ruta."
+    required: true
+
+  - name: PROJECT_NAME
+    description: "Nombre de proyecto."
+    required: true
+
+labels:
+  app: "${APP_NAME}"
+
 objects:
   - kind: PersistentVolumeClaim
     apiVersion: v1
@@ -145,7 +156,7 @@ objects:
     metadata:
       name: "${APP_NAME}-testlink"
     spec:
-      host: "${APP_NAME}-${NAMESPACE}.${ROUTER_HOSTNAME}"
+      host: "${APP_NAME}-${NAMESPACE}.${DOMAIN_NAME}"
       to:
         kind: Service
         name: "${APP_NAME}-mariadb"
