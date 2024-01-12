@@ -13,3 +13,5 @@ SMTP_PORT=587
 SMTP_USER=distribuidosequipo9@outlook.com
 SMTP_PASSWORD=distequipo9
 SMTP_CONNECTION_MODE=tls
+DOMAIN_NAME="GrupoTestlink.okd-dev.ucab.edu.ve"
+PROJECT_NAME="pj-djpacheco-19"
